@@ -1,23 +1,51 @@
 import { useStorage } from '@capacitor-community/react-hooks/storage';
 import { verify } from 'crypto';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-let counter = 0
+
 
 export function useToDoList() {
 
+    const { get, set, remove } = useStorage();
 
-    let [listItems, updateList] = useState([]);
+    let listStocked = [];
+
+    console.log('listSotcked après appel de la fonction : ', listStocked)
+
+    let [listItems, updateList] = useState(listStocked);
+
+    //Pour initialiser la liste stockées en local
+    function getStockedList() {
+        get('listTodo').then((listJson) => {
+            if (listJson != null) {
+                listStocked = JSON.parse(listJson);
+
+                updateList(listStocked)
+            }
+        })
+    }
+
+    useEffect(() => {
+        getStockedList()
+    }, [])
+
+
 
     function addItem(text) {
+
+        let lengthList = listItems.length - 1
+
+
+
         const newItem = {
-            id: counter++,
+            id: lengthList++,
             text: text,
             checked: false
         }
 
         const newTable = listItems.concat([newItem])
 
+        set('listTodo', JSON.stringify(newTable))
         updateList(newTable)
     }
 
@@ -29,6 +57,7 @@ export function useToDoList() {
             return item
         })
 
+        set('listTodo', JSON.stringify(updatedList))
         updateList(updatedList)
     }
 
