@@ -8,49 +8,15 @@ import { create } from 'ionicons/icons';
 
 const Home: React.FC = () => {
 
-  const { addItem, removeAllItems, tableLocal, initializeItems2d, changeState } = useToDoList();
+  const { addItem, listItems, toggleItem } = useToDoList();
   const [text, setText] = useState<any>();
-  initializeItems2d();
 
-  const [checkboxState, setcheckboxState] = useState<any>();
 
-  const isLined = (event: boolean) => {
-    //console.log(event);
 
-    //probleme ou return le composent ? -> passer par un setState
-
-    if (event === true) {
-      console.log(true)
-      //return <IonLabel className={'lined'}>{ valueTo }</IonLabel>
-      return 'lined'
-    } else if (event === false) {
-      console.log(false)
-      //return <IonLabel className={'unlined'}>{ valueTo }</IonLabel>
-
-      return 'unlined'
-    }
-
-  }
-
-  const initaleState = (value: boolean) => {
-
-    if (checkboxState === undefined) {
-      setcheckboxState(value)
-      return checkboxState
-    } else { return checkboxState }
-
-  }
-
-  const changeStateOn = (index: any, state: any) => {
-    console.log('avant', checkboxState)
-    setcheckboxState(!state)
-    changeState(index, checkboxState)
-    console.log('apres',checkboxState)
-  }
 
   const displayItems = () => {
 
-    if (tableLocal[0] === "vide") {
+    if (listItems.length === 0) {
       return <IonItem><IonLabel>Félicitation votre liste est vide</IonLabel></IonItem>
     }
 
@@ -58,20 +24,16 @@ const Home: React.FC = () => {
 
     else {
 
-      return tableLocal.map((value, index) => (
+      return listItems.map((item) => (
 
-        
 
         //Il faut l'appeler sur le parent et non pas sur l'enfant
 
         //LE PROBLEME EST QUE L'ETAT N'EST PAS PROPRE A L'ENFANT IL EST COMMUN AUX DEUX
 
-        <IonItem key={index}>
-          <IonCheckbox slot="start" color="primary" checked={value[1]} onIonChange={(e) => {
-            //setcheckboxState([index, e.detail.checked])
-            changeState(index, e.detail.checked)
-          }} />
-          <IonLabel className={isLined(value[1])}>{value[0]}</IonLabel>
+        <IonItem key={item.id}>
+          <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={ (e) => { toggleItem(item.id) }} />
+          <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
           <IonIcon icon={create} color="primary" slot="end" />
         </IonItem>
@@ -106,14 +68,14 @@ const Home: React.FC = () => {
 
 
         <IonItem>
-          <IonButton color="primary" href='' type="submit" onClick={() => removeAllItems()}>Vider totalement la liste</IonButton>
+          <IonButton color="primary" type="submit">Vider totalement la liste</IonButton>
         </IonItem>
 
 
 
         <IonItem>
           <IonInput placeholder="Qu'avez-vous en tête ?" clearInput autofocus required onIonChange={e => { setText(e.detail.value); }}></IonInput>
-          <IonButton color="primary" href='' type="submit" onClick={() => { addItem(text) }}>Créer</IonButton>
+          <IonButton color="primary" type="submit" onClick={() => { addItem(text) }}>Créer</IonButton>
         </IonItem>
 
 

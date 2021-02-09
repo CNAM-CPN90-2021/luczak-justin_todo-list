@@ -1,74 +1,40 @@
 import { useStorage } from '@capacitor-community/react-hooks/storage';
 import { verify } from 'crypto';
+import { useState } from 'react';
 
-let tableLocal: any[] = [];
+let counter = 0
 
 export function useToDoList() {
 
 
-    const { get, set, remove } = useStorage();
+    let [listItems, updateList] = useState([]);
 
-    //Pour initialiser la liste stockées en local et la stocker sur la liste temporaire
-    const initializeItems2d = () => {
-        get('todos2d').then((valueInitial2d) => {
-            if (valueInitial2d != null) {
-                tableLocal = JSON.parse(valueInitial2d)
-            } else {
-                tableLocal = ['vide']
+    function addItem(text) {
+        const newItem = {
+            id: counter++,
+            text: text,
+            checked: false
+        }
+
+        const newTable = listItems.concat([newItem])
+
+        updateList(newTable)
+    }
+
+    function toggleItem(id) {
+        const updatedList = listItems.map(item => {
+            if (item.id === id) {
+                item.checked = !item.checked
             }
+            return item
         })
+
+        updateList(updatedList)
     }
 
-    //Pour ajouter des items et les sauvegarder en local : 
-    const addItem = (itemValue: string) => {
-
-        if (itemValue === undefined) {
-            return
-        }
-
-        if (tableLocal[0] === 'vide') {
-            tableLocal = []
-        }
-
-        // je fais le tableau en 2 dimensions afin de stocker l'état
-        tableLocal.push([itemValue, false])
-        remove('todos2d')
-        set('todos2d', JSON.stringify(tableLocal))
-    }
-
-    //Pour changer l'état d'une entrée
-    const changeState = (key: number, state: any) => {
-        
-        if (state === false) {
-            console.log("au début", tableLocal[key])
-            const line = tableLocal[key]
-            line[1] = false
-            tableLocal[key] = line
-            console.log("après", tableLocal[key])
-        }
-
-        else {
-            console.log("au début", tableLocal[key])
-            const line = tableLocal[key]
-            line[1] = true
-            tableLocal[key] = line
-            console.log("après", tableLocal[key])
-        }
-        remove('todos2d')
-        set('todos2d', JSON.stringify(tableLocal))
-
-
-    }
-
-    //Pour retirer tous les items stockés dans la liste : 
-    const removeAllItems = () => {
-
-        remove('todos2d')
-        tableLocal = ['vide']
-    }
 
     return {
-        addItem, removeAllItems, tableLocal, initializeItems2d, changeState
+        listItems, addItem, toggleItem
     }
 
 }
