@@ -11,6 +11,33 @@ export function useToDoList() {
 
     let [listItems, updateList] = useState(listStocked);
 
+    // compteur tâches à faire
+    let [counterTodo, setCounterTodo] = useState(0);
+
+    function getCounterTodo() {
+        get('counterTodo').then((number) => {
+                setCounterTodo(parseInt(number))  
+        })
+    }
+
+    useEffect(() => {
+        getCounterTodo()
+    }, [])
+
+    function addCounterTodo() {
+        let count = counterTodo 
+        count = count + 1
+        setCounterTodo(count)
+        set('counterTodo', JSON.stringify(count))
+    }
+
+    function removeCounterTodo() {
+        let count = counterTodo
+        count = count - 1
+        setCounterTodo(count)
+        set('counterTodo', JSON.stringify(count))
+    }
+
     //Pour initialiser la liste stockées en local
     function getStockedList() {
         get('listTodo').then((listJson) => {
@@ -27,8 +54,6 @@ export function useToDoList() {
         getStockedList()
     }, [])
 
-
-
     // fonction pour ajouter des items à la liste
     function addItem(text) {
 
@@ -42,6 +67,9 @@ export function useToDoList() {
         }
 
         const newTable = listItems.concat([newItem])
+
+
+        addCounterTodo()
 
         // on ajoute le nouveau tableau au sotckage en local
         set('listTodo', JSON.stringify(newTable))
@@ -73,11 +101,16 @@ export function useToDoList() {
 
         // on vide la liste stockée en mémoire
         updateList([]);
+
+        set('counterTodo', JSON.stringify(0));
+
+        setCounterTodo(0);
     }
 
 
+
     return {
-        listItems, addItem, toggleItem, removeAllItems
+        listItems, addItem, toggleItem, removeAllItems, counterTodo, setCounterTodo, removeCounterTodo, addCounterTodo
     }
 
 }

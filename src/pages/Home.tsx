@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, IonBadge } from '@ionic/react';
 import React, { useEffect } from 'react';
 import './Home.css';
 import { useToDoList } from '../hooks/useToDoList';
@@ -8,12 +8,13 @@ import { create } from 'ionicons/icons';
 
 const Home: React.FC = () => {
 
-  const { addItem, listItems, toggleItem, removeAllItems } = useToDoList();
+  const { addItem, listItems, toggleItem, removeAllItems, counterTodo, setCounterTodo, removeCounterTodo, addCounterTodo } = useToDoList();
+
+  // texte à ajouter pour un nouvel item
   const [text, setText] = useState<any>();
 
   // état du tri de la liste
   let [segmentValue, setSegmentValue] = useState('all');
-
 
   const displayItems = (value) => {
 
@@ -29,15 +30,38 @@ const Home: React.FC = () => {
       if (value === 'all') {
 
 
-        return listItems.map((item) => (
+        return listItems.map((item) => {
 
-          <IonItem key={item.id}>
-            <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => { toggleItem(item.id) }} />
-            <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
+          if (item.checked === false) {
+            return (
+              <IonItem key={item.id}>
+                <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
+                  toggleItem(item.id)
+                  removeCounterTodo()
+                }} />
+                <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-            <IonIcon icon={create} color="primary" slot="end" />
-          </IonItem>
-        ))
+                <IonIcon icon={create} color="primary" slot="end" />
+              </IonItem>
+            )
+          }
+
+          else {
+            return (
+              <IonItem key={item.id}>
+                <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => { 
+                  toggleItem(item.id) 
+                  addCounterTodo()
+                  }} />
+                <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
+
+                <IonIcon icon={create} color="primary" slot="end" />
+              </IonItem>
+            )
+          }
+
+        }
+        )
       }
 
       // afficher les items non-checké
@@ -49,12 +73,19 @@ const Home: React.FC = () => {
               console.log('on y est', item.text)
               return (
                 < IonItem key={item.id} >
-                  <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => { toggleItem(item.id) }} />
+                  <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
+                    toggleItem(item.id)
+                    removeCounterTodo()
+                  }} />
                   <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
                   <IonIcon icon={create} color="primary" slot="end" />
                 </IonItem >
-              )}}))}}
+              )
+            }
+          }))
+      }
+    }
 
   }
 
@@ -79,7 +110,8 @@ const Home: React.FC = () => {
             <IonLabel>Tout</IonLabel>
           </IonSegmentButton>
           <IonSegmentButton value="unchecked">
-            <IonLabel>À faire</IonLabel>
+            <IonLabel>À faire <IonBadge color="primary">{counterTodo}</IonBadge></IonLabel>
+
           </IonSegmentButton>
         </IonSegment>
 
