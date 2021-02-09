@@ -32,7 +32,7 @@ export function useToDoList() {
     // fonction pour ajouter des items à la liste
     function addItem(text) {
 
-        // on prépare l'id pour le nouvel objet en prenant le dernier id du tableau actuel et on retire 1 pour débuter à la bonne valeur
+        // on prépare l'id pour le nouvel objet en prenant le dernier id du tableau actuel et on retire 1 pour débuter à la bonne valeur 
         let lengthList = listItems.length - 1
 
         const newItem = {
