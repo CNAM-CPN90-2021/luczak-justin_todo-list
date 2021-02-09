@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton } from '@ionic/react';
 import React from 'react';
 import './Home.css';
 import { useToDoList } from '../hooks/useToDoList';
@@ -8,10 +8,8 @@ import { create } from 'ionicons/icons';
 
 const Home: React.FC = () => {
 
-  const { addItem, listItems, toggleItem } = useToDoList();
+  const { addItem, listItems, toggleItem, removeAllItems } = useToDoList();
   const [text, setText] = useState<any>();
-
-
 
 
   const displayItems = () => {
@@ -21,18 +19,12 @@ const Home: React.FC = () => {
     }
 
 
-
     else {
 
       return listItems.map((item) => (
 
-
-        //Il faut l'appeler sur le parent et non pas sur l'enfant
-
-        //LE PROBLEME EST QUE L'ETAT N'EST PAS PROPRE A L'ENFANT IL EST COMMUN AUX DEUX
-
         <IonItem key={item.id}>
-          <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={ (e) => { toggleItem(item.id) }} />
+          <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => { toggleItem(item.id) }} />
           <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
           <IonIcon icon={create} color="primary" slot="end" />
@@ -40,8 +32,6 @@ const Home: React.FC = () => {
       ))
     }
   }
-
-  //utiliser un setState ou le state checkboxState
 
 
   return (
@@ -59,6 +49,15 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
+        <IonSegment onIonChange={e => console.log('Segment selected', e.detail.value)}>
+          <IonSegmentButton value="all">
+            <IonLabel>Tout</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="unchecked">
+            <IonLabel>À faire</IonLabel>
+          </IonSegmentButton>
+        </IonSegment>
+
 
         <IonList>
           {
@@ -68,7 +67,7 @@ const Home: React.FC = () => {
 
 
         <IonItem>
-          <IonButton color="primary" type="submit">Vider totalement la liste</IonButton>
+          <IonButton color="primary" type="submit" onClick={() => { removeAllItems() }}>Vider totalement la liste</IonButton>
         </IonItem>
 
 

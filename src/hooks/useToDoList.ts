@@ -1,5 +1,4 @@
 import { useStorage } from '@capacitor-community/react-hooks/storage';
-import { verify } from 'crypto';
 import { useEffect, useState } from 'react';
 
 
@@ -9,8 +8,6 @@ export function useToDoList() {
     const { get, set, remove } = useStorage();
 
     let listStocked = [];
-
-    console.log('listSotcked après appel de la fonction : ', listStocked)
 
     let [listItems, updateList] = useState(listStocked);
 
@@ -25,17 +22,18 @@ export function useToDoList() {
         })
     }
 
+    // appeler la fonction une seule fois pour initialiser les items stockés en local
     useEffect(() => {
         getStockedList()
     }, [])
 
 
 
+    // fonction pour ajouter des items à la liste
     function addItem(text) {
 
+        // on prépare l'id pour le nouvel objet en prenant le dernier id du tableau actuel et on retire 1 pour débuter à la bonne valeur
         let lengthList = listItems.length - 1
-
-
 
         const newItem = {
             id: lengthList++,
@@ -45,7 +43,10 @@ export function useToDoList() {
 
         const newTable = listItems.concat([newItem])
 
+        // on ajoute le nouveau tableau au sotckage en local
         set('listTodo', JSON.stringify(newTable))
+
+        // on update la liste en mémoire
         updateList(newTable)
     }
 
@@ -57,13 +58,26 @@ export function useToDoList() {
             return item
         })
 
+        // on ajoute les nouvelles valeurs dans le tableau stocké en local
         set('listTodo', JSON.stringify(updatedList))
+
+        // on update les nouvelles valeurs en mémoire
         updateList(updatedList)
+    }
+
+    // fonction pour retirer tous les items de la liste
+    function removeAllItems() {
+
+        // on enlève la liste stockée en local
+        remove('listTodo');
+
+        // on vide la liste stockée en mémoire
+        updateList([]);
     }
 
 
     return {
-        listItems, addItem, toggleItem
+        listItems, addItem, toggleItem, removeAllItems
     }
 
 }
