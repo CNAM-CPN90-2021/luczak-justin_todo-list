@@ -121,7 +121,7 @@ export function useToDoList() {
     // fonction pour passer un item de coché à non coché et inversement
     function toggleItem(id) {
         const updatedList = listItems.map(item => {
-            if (item.id === id) {
+            if (item != undefined && item.id === id) {
                 item.checked = !item.checked
             }
             return item
