@@ -56,12 +56,12 @@ export function useToDoList() {
 
     // fonction pour ajouter des items à la liste
     function addItem(text) {
-
+        
         // on prépare l'id pour le nouvel objet en prenant le dernier id du tableau actuel et on retire 1 pour débuter à la bonne valeur 
         let lengthList = listItems.length - 1
 
         const newItem = {
-            id: lengthList++,
+            id: lengthList + 1,
             text: text,
             checked: false
         }
@@ -76,6 +76,31 @@ export function useToDoList() {
 
         // on update la liste en mémoire
         updateList(newTable)
+    }
+
+    function removeItem(id) {
+        let newList = listItems
+        delete newList[id]
+        //newList[id] = undefined
+
+        removeCounterTodo();
+
+        // on ajoute les nouvelles valeurs dans le tableau stocké en local
+        set('listTodo', JSON.stringify(newList))
+
+        // on update les nouvelles valeurs en mémoire
+        updateList(newList)
+    }
+
+    function modifieItem(id, text) {
+        let newList = listItems
+        newList[id].text = text 
+
+        // on ajoute les nouvelles valeurs dans le tableau stocké en local
+        set('listTodo', JSON.stringify(newList))
+
+        // on update les nouvelles valeurs en mémoire
+        updateList(newList)
     }
 
     function toggleItem(id) {
@@ -110,7 +135,7 @@ export function useToDoList() {
 
 
     return {
-        listItems, addItem, toggleItem, removeAllItems, counterTodo, setCounterTodo, removeCounterTodo, addCounterTodo
+        listItems, addItem, toggleItem, removeAllItems, counterTodo, setCounterTodo, removeCounterTodo, addCounterTodo, removeItem, modifieItem
     }
 
 }
