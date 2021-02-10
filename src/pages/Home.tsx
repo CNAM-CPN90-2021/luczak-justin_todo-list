@@ -1,20 +1,26 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, IonBadge } from '@ionic/react';
-import React, { useEffect } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, IonBadge, IonActionSheet, IonAlert } from '@ionic/react';
+import React from 'react';
 import './Home.css';
 import { useToDoList } from '../hooks/useToDoList';
 import { useState } from "react";
-import { create } from 'ionicons/icons';
-//import { setConstantValue } from 'typescript';
+import { create, trash, close } from 'ionicons/icons';
+
 
 const Home: React.FC = () => {
 
-  const { addItem, listItems, toggleItem, removeAllItems, counterTodo, setCounterTodo, removeCounterTodo, addCounterTodo } = useToDoList();
+  const { addItem, listItems, toggleItem, removeAllItems, counterTodo, removeCounterTodo, addCounterTodo, removeItem, modifieItem } = useToDoList();
 
   // texte à ajouter pour un nouvel item
   const [text, setText] = useState<any>();
 
   // état du tri de la liste
   let [segmentValue, setSegmentValue] = useState('all');
+
+  let [showActionSheet, setShowActionSheet] = useState(false);
+
+  let [showModifieAlert, setShowModifieAlert] = useState(false);
+
+  let [itemToModifie, setItemToModifie] = useState<number>();
 
   const displayItems = (value) => {
 
@@ -31,9 +37,9 @@ const Home: React.FC = () => {
 
 
         return listItems.map((item) => {
-
-          if (item.checked === false) {
+          if (item != undefined && item.checked === false) {
             return (
+
               <IonItem key={item.id}>
                 <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
                   toggleItem(item.id)
@@ -41,21 +47,153 @@ const Home: React.FC = () => {
                 }} />
                 <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                <IonIcon icon={create} color="primary" slot="end" />
+                <IonButton onClick={() => {
+                  setShowActionSheet(true)
+                  setItemToModifie(item.id)
+                }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+
+
+                <IonActionSheet
+                  isOpen={showActionSheet}
+                  onDidDismiss={() => setShowActionSheet(false)}
+                  cssClass='my-custom-class'
+                  buttons={[{
+                    text: 'Supprimer',
+                    role: 'destructive',
+                    icon: trash,
+                    handler: () => {
+                      removeItem(itemToModifie)
+                    }
+                  },
+                  {
+                    text: 'Modifier',
+                    icon: create,
+                    handler: () => {
+                      setShowModifieAlert(true)
+                    }
+                  }, {
+                    text: 'Annuler',
+                    icon: close,
+                    role: 'cancel',
+                    handler: () => {
+                      console.log('Annuler');
+                    }
+                  }]}
+                >
+                </IonActionSheet>
+
+
+
+                <IonAlert
+                  isOpen={showModifieAlert}
+                  onDidDismiss={() => setShowModifieAlert(false)}
+                  message={'Renommez votre tâche'}
+                  header={'Prompt!'}
+                  inputs={[
+                    {
+
+                      name: 'text',
+                      type: 'text',
+                      placeholder: 'Nouveau nom de la tâche',
+                      id: 'textToChange',
+
+                    }]}
+                  buttons={[
+                    {
+                      text: 'Annuler',
+                      role: 'cancel',
+                      cssClass: 'secondary',
+                      handler: () => {
+                        console.log('Confirm Cancel');
+                      }
+                    },
+                    {
+                      text: 'Valider',
+                      handler: data => {
+                        modifieItem(itemToModifie, data.text)
+                      }
+                    }
+                  ]}
+                />
               </IonItem>
             )
           }
 
-          else {
+          else if (item != undefined) {
             return (
               <IonItem key={item.id}>
-                <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => { 
-                  toggleItem(item.id) 
+                <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
+                  toggleItem(item.id)
                   addCounterTodo()
-                  }} />
+                }} />
                 <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                <IonIcon icon={create} color="primary" slot="end" />
+                <IonButton onClick={() => {
+                  setShowActionSheet(true)
+                  setItemToModifie(item.id)
+                }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+
+
+                <IonActionSheet
+                  isOpen={showActionSheet}
+                  onDidDismiss={() => setShowActionSheet(false)}
+                  cssClass='my-custom-class'
+                  buttons={[{
+                    text: 'Supprimer',
+                    role: 'destructive',
+                    icon: trash,
+                    handler: () => {
+                      removeItem(itemToModifie)
+                    }
+                  },
+                  {
+                    text: 'Modifier',
+                    icon: create,
+                    handler: () => {
+                      setShowModifieAlert(true)
+                    }
+                  }, {
+                    text: 'Annuler',
+                    icon: close,
+                    role: 'cancel',
+                    handler: () => {
+                      console.log('Annuler');
+                    }
+                  }]}
+                >
+                </IonActionSheet>
+
+                <IonAlert
+                  isOpen={showModifieAlert}
+                  onDidDismiss={() => setShowModifieAlert(false)}
+                  message={'Renommez votre tâche'}
+                  header={'Prompt!'}
+                  inputs={[
+                    {
+
+                      name: 'text',
+                      type: 'text',
+                      placeholder: 'Nouveau nom de la tâche',
+                      id: 'textToChange',
+
+                    }]}
+                  buttons={[
+                    {
+                      text: 'Annuler',
+                      role: 'cancel',
+                      cssClass: 'secondary',
+                      handler: () => {
+                        console.log('Confirm Cancel');
+                      }
+                    },
+                    {
+                      text: 'Valider',
+                      handler: data => {
+                        modifieItem(itemToModifie, data.text)
+                      }
+                    }
+                  ]}
+                />
               </IonItem>
             )
           }
@@ -66,11 +204,9 @@ const Home: React.FC = () => {
 
       // afficher les items non-checké
       else if (value === 'unchecked') {
-        console.log('oui on y est')
         return (
           listItems.map((item) => {
-            if (item.checked === false) {
-              console.log('on y est', item.text)
+            if (item != undefined && item.checked === false) {
               return (
                 < IonItem key={item.id} >
                   <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
@@ -79,7 +215,72 @@ const Home: React.FC = () => {
                   }} />
                   <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                  <IonIcon icon={create} color="primary" slot="end" />
+                  <IonButton onClick={() => {
+                    setShowActionSheet(true)
+                    setItemToModifie(item.id)
+                  }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+
+
+                  <IonActionSheet
+                    isOpen={showActionSheet}
+                    onDidDismiss={() => setShowActionSheet(false)}
+                    cssClass='my-custom-class'
+                    buttons={[{
+                      text: 'Supprimer',
+                      role: 'destructive',
+                      icon: trash,
+                      handler: () => {
+                        removeItem(itemToModifie)
+                      }
+                    },
+                    {
+                      text: 'Modifier',
+                      icon: create,
+                      handler: () => {
+                        setShowModifieAlert(true)
+                      }
+                    }, {
+                      text: 'Annuler',
+                      icon: close,
+                      role: 'cancel',
+                      handler: () => {
+                        console.log('Annuler');
+                      }
+                    }]}
+                  >
+                  </IonActionSheet>
+
+                  <IonAlert
+                    isOpen={showModifieAlert}
+                    onDidDismiss={() => setShowModifieAlert(false)}
+                    message={'Renommez votre tâche'}
+                    header={'Prompt!'}
+                    inputs={[
+                      {
+
+                        name: 'text',
+                        type: 'text',
+                        placeholder: 'Nouveau nom de la tâche',
+                        id: 'textToChange',
+
+                      }]}
+                    buttons={[
+                      {
+                        text: 'Annuler',
+                        role: 'cancel',
+                        cssClass: 'secondary',
+                        handler: () => {
+                          console.log('Confirm Cancel');
+                        }
+                      },
+                      {
+                        text: 'Valider',
+                        handler: data => {
+                          modifieItem(itemToModifie, data.text)
+                        }
+                      }
+                    ]}
+                  />
                 </IonItem >
               )
             }
