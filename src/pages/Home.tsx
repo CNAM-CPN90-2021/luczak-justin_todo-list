@@ -7,7 +7,7 @@ import { create, trash, close } from 'ionicons/icons';
 
 
 const Home: React.FC = () => {
-
+  // import des fonctions et variables
   const { addItem, listItems, toggleItem, removeAllItems, counterTodo, removeCounterTodo, addCounterTodo, removeItem, modifieItem } = useToDoList();
 
   // texte à ajouter pour un nouvel item
@@ -16,12 +16,16 @@ const Home: React.FC = () => {
   // état du tri de la liste
   let [segmentValue, setSegmentValue] = useState('all');
 
+  // état de l'affichage de la feuille d'action
   let [showActionSheet, setShowActionSheet] = useState(false);
 
+  // état de l'affichage de l'alerte de modification de l'item
   let [showModifieAlert, setShowModifieAlert] = useState(false);
 
+  // sélecteur de l'id de l'item à modifier ou à supprimer
   let [itemToModifie, setItemToModifie] = useState<number>();
 
+  // fonction pour afficher les items dans la liste
   const displayItems = (value) => {
 
     // afficher un message différent si la liste est vide
@@ -29,17 +33,18 @@ const Home: React.FC = () => {
       return <IonItem><IonLabel>Félicitation votre liste est vide</IonLabel></IonItem>
     }
 
-
+    // sinon on affiche la liste 
     else {
 
-      // afficher tous les items
+      // pour afficher tous les items
       if (value === 'all') {
 
-
         return listItems.map((item) => {
+
+          // ne pas afficher les items supprimés manuellement
+          // trie des items non cochés afin de les compter
           if (item != undefined && item.checked === false) {
             return (
-
               <IonItem key={item.id}>
                 <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
                   toggleItem(item.id)
@@ -75,9 +80,6 @@ const Home: React.FC = () => {
                     text: 'Annuler',
                     icon: close,
                     role: 'cancel',
-                    handler: () => {
-                      console.log('Annuler');
-                    }
                   }]}
                 >
                 </IonActionSheet>
@@ -87,25 +89,18 @@ const Home: React.FC = () => {
                 <IonAlert
                   isOpen={showModifieAlert}
                   onDidDismiss={() => setShowModifieAlert(false)}
-                  message={'Renommez votre tâche'}
-                  header={'Prompt!'}
+                  header={'Renommez votre tâche'}
                   inputs={[
                     {
-
                       name: 'text',
                       type: 'text',
                       placeholder: 'Nouveau nom de la tâche',
-                      id: 'textToChange',
-
                     }]}
                   buttons={[
                     {
                       text: 'Annuler',
                       role: 'cancel',
                       cssClass: 'secondary',
-                      handler: () => {
-                        console.log('Confirm Cancel');
-                      }
                     },
                     {
                       text: 'Valider',
@@ -119,6 +114,7 @@ const Home: React.FC = () => {
             )
           }
 
+          // on affiche les items cochés sans les compter
           else if (item != undefined) {
             return (
               <IonItem key={item.id}>
@@ -156,9 +152,6 @@ const Home: React.FC = () => {
                     text: 'Annuler',
                     icon: close,
                     role: 'cancel',
-                    handler: () => {
-                      console.log('Annuler');
-                    }
                   }]}
                 >
                 </IonActionSheet>
@@ -166,46 +159,35 @@ const Home: React.FC = () => {
                 <IonAlert
                   isOpen={showModifieAlert}
                   onDidDismiss={() => setShowModifieAlert(false)}
-                  message={'Renommez votre tâche'}
-                  header={'Prompt!'}
+                  header={'Renommez votre tâche'}
                   inputs={[
                     {
-
                       name: 'text',
                       type: 'text',
                       placeholder: 'Nouveau nom de la tâche',
-                      id: 'textToChange',
-
                     }]}
                   buttons={[
                     {
                       text: 'Annuler',
                       role: 'cancel',
                       cssClass: 'secondary',
-                      handler: () => {
-                        console.log('Confirm Cancel');
-                      }
                     },
                     {
                       text: 'Valider',
                       handler: data => {
                         modifieItem(itemToModifie, data.text)
                       }
-                    }
-                  ]}
-                />
-              </IonItem>
-            )
+                    }]} /></IonItem>)
           }
-
-        }
-        )
+        })
       }
 
-      // afficher les items non-checké
+      // trie des items non cochés
       else if (value === 'unchecked') {
         return (
           listItems.map((item) => {
+            // ne pas afficher les items supprimés manuellement
+            // traite uniquement les items non cochés
             if (item != undefined && item.checked === false) {
               return (
                 < IonItem key={item.id} >
@@ -243,9 +225,6 @@ const Home: React.FC = () => {
                       text: 'Annuler',
                       icon: close,
                       role: 'cancel',
-                      handler: () => {
-                        console.log('Annuler');
-                      }
                     }]}
                   >
                   </IonActionSheet>
@@ -253,25 +232,18 @@ const Home: React.FC = () => {
                   <IonAlert
                     isOpen={showModifieAlert}
                     onDidDismiss={() => setShowModifieAlert(false)}
-                    message={'Renommez votre tâche'}
-                    header={'Prompt!'}
+                    header={'Renommez votre tâche'}
                     inputs={[
                       {
-
                         name: 'text',
                         type: 'text',
                         placeholder: 'Nouveau nom de la tâche',
-                        id: 'textToChange',
-
                       }]}
                     buttons={[
                       {
                         text: 'Annuler',
                         role: 'cancel',
                         cssClass: 'secondary',
-                        handler: () => {
-                          console.log('Confirm Cancel');
-                        }
                       },
                       {
                         text: 'Valider',
@@ -280,14 +252,11 @@ const Home: React.FC = () => {
                         }
                       }
                     ]}
-                  />
-                </IonItem >
-              )
+                  /></IonItem >)
             }
           }))
       }
     }
-
   }
 
 
@@ -343,7 +312,5 @@ const Home: React.FC = () => {
     </IonPage>
   );
 };
-
-
 
 export default Home;
