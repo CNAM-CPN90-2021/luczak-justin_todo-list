@@ -17,7 +17,12 @@ export function useToDoList() {
     // fonction pour initialiser le compteur d'items non cochés et synchroniser les données stockées en local
     function getCounterTodo() {
         get('counterTodo').then((number) => {
-            setCounterTodo(parseInt(number))
+            if (number != null) {
+                setCounterTodo(parseInt(number))
+            }
+            else {
+                setCounterTodo(0)
+            }
         })
     }
 
