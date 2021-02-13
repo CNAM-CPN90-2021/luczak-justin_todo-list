@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, IonBadge, IonActionSheet, IonAlert } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonButton, IonCheckbox, IonIcon, IonSegment, IonSegmentButton, IonBadge, IonActionSheet, IonAlert, IonItemGroup, IonFooter, IonGrid } from '@ionic/react';
 import React from 'react';
 import './Home.css';
 import { useToDoList } from '../hooks/useToDoList';
@@ -24,6 +24,9 @@ const Home: React.FC = () => {
 
   // sélecteur de l'id de l'item à modifier ou à supprimer
   let [itemToModifie, setItemToModifie] = useState<number>();
+
+  // état de l'affichage de l'alerte de suppression de toutes les tâches
+  const [showDeleteAllAlert, setShowDeleteAllAlert] = useState(false);
 
   // fonction pour afficher les items dans la liste
   const displayItems = (value) => {
@@ -52,10 +55,10 @@ const Home: React.FC = () => {
                 }} />
                 <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                <IonButton onClick={() => {
+                <IonButton fill='clear' onClick={() => {
                   setShowActionSheet(true)
                   setItemToModifie(item.id)
-                }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+                }}><IonIcon icon={create} color="primary" slot="end" /></IonButton>
 
 
                 <IonActionSheet
@@ -117,17 +120,17 @@ const Home: React.FC = () => {
           // on affiche les items cochés sans les compter
           else if (item != undefined) {
             return (
-              <IonItem key={item.id}>
+              <IonItem className='transparent50' key={item.id}>
                 <IonCheckbox slot="start" color="primary" checked={item.checked} onIonChange={(e) => {
                   toggleItem(item.id)
                   addCounterTodo()
                 }} />
                 <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                <IonButton onClick={() => {
+                <IonButton fill='clear' onClick={() => {
                   setShowActionSheet(true)
                   setItemToModifie(item.id)
-                }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+                }}><IonIcon icon={create} color="primary" slot="end" /></IonButton>
 
 
                 <IonActionSheet
@@ -197,10 +200,10 @@ const Home: React.FC = () => {
                   }} />
                   <IonLabel className={item.checked ? 'checked' : ''}>{item.text}</IonLabel>
 
-                  <IonButton onClick={() => {
+                  <IonButton fill='clear' onClick={() => {
                     setShowActionSheet(true)
                     setItemToModifie(item.id)
-                  }}><IonIcon icon={create} color="light" slot="end" /></IonButton>
+                  }}><IonIcon icon={create} color="primary" slot="end" /></IonButton>
 
 
                   <IonActionSheet
@@ -275,7 +278,7 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <IonSegment onIonChange={e => setSegmentValue(e.detail.value)}>
+        <IonSegment className='padding-lr' onIonChange={e => setSegmentValue(e.detail.value)}>
           <IonSegmentButton value="all">
             <IonLabel>Tout</IonLabel>
           </IonSegmentButton>
@@ -286,25 +289,54 @@ const Home: React.FC = () => {
         </IonSegment>
 
 
-        <IonList>
+        <IonList className='margin-bottom-120'>
           {
             displayItems(segmentValue)
           }
         </IonList>
 
 
-        <IonItem>
-          <IonButton color="primary" type="submit" onClick={() => { removeAllItems() }}>Vider totalement la liste</IonButton>
-        </IonItem>
+        <IonFooter className='footer'>
 
+          <IonItemGroup>
 
+            <IonItem>
+              <IonButton color="primary" type="submit" onClick={() => { setShowDeleteAllAlert(true) }}>Vider totalement la liste</IonButton>
+            </IonItem>
 
-        <IonItem>
-          <IonInput placeholder="Qu'avez-vous en tête ?" inputmode="text" clearInput autofocus required onIonChange={e => { setText(e.detail.value); }}></IonInput>
-          <IonButton color="primary" type="submit" onClick={() => { addItem(text) }}>Créer</IonButton>
-        </IonItem>
+            <IonAlert
+              isOpen={showDeleteAllAlert}
+              onDidDismiss={() => setShowDeleteAllAlert(false)}
+              cssClass='my-custom-class'
+              header={'Supprimer toutes les tâches'}
+              message={'<strong>Souhaitez-vous vraiment supprimer toutes les tâches actuelles ?</strong>'}
+              buttons={[
+                {
+                  text: 'Annuler',
+                  role: 'cancel',
+                  cssClass: 'secondary',
+                  handler: blah => {
+                    console.log('Confirm Cancel: blah');
+                  }
+                },
+                {
+                  text: 'Supprimer toutes les tâches',
+                  cssClass: 'primary',
+                  handler: () => {
+                    removeAllItems()
+                  }
+                }
+              ]}
+            />
 
+            <IonItem>
+              <IonInput placeholder="Qu'avez-vous en tête ?" inputmode="text" clearInput autofocus required onIonChange={e => { setText(e.detail.value); }}></IonInput>
+              <IonButton color="primary" type="submit" onClick={() => { addItem(text) }}>Créer</IonButton>
+            </IonItem>
 
+          </IonItemGroup>
+
+        </IonFooter>
 
       </IonContent>
 

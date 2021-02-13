@@ -1,3 +1,16 @@
 .checked {
     text-decoration: line-through;
 }
+
+.margin-bottom-120 {
+    margin-bottom: 120px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+}
+
+.transparent50 {
+    opacity: .5;
+}
