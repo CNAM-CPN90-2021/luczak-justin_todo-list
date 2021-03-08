@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 
 export function useToDoList() {
 
+    /*
+        👍
+    */
     // import des fonctions de stockage local
     const { get, set, remove } = useStorage();
 
@@ -11,6 +14,12 @@ export function useToDoList() {
     let listStocked = [];
     let [listItems, updateList] = useState(listStocked);
 
+    /*
+       En réalité, on peut recalculer très rapidement le compteur de TODO
+       Toute la partie qui concerne le counter peut être remplacée par :
+
+       const counterTodo = listItems.filter(item => item.checked === false).length
+    */
     // compteur tâches à faire
     let [counterTodo, setCounterTodo] = useState(0);
 
@@ -67,6 +76,9 @@ export function useToDoList() {
     function addItem(text) {
 
         // on prépare l'id pour le nouvel objet en prenant le dernier id du tableau actuel et on retire 1 pour débuter à la bonne valeur 
+        /*
+            Attention avec cette méthode de génératin d'id, tu peux te retrouver avec des collisions si la longueur du tableau réduit (ex: on supprime un élément)
+        */
         let lengthList = listItems.length - 1
 
         const newItem = {
@@ -99,6 +111,11 @@ export function useToDoList() {
             removeCounterTodo();
         }
 
+        /*
+            Il faut vraiment éviter de supprimer une clef dans un tableau, car on se retrouve avec un tableau à trous (ça se voit dans ta fonction de rendu, tu dois esquiver les items valant undefined, et ça complique ton comptage)
+
+            Et il faut encore plus éviter ça (ou toute modification directe d'un objet / tableau) en React, on peut se retrouver avec des données corrompues et introduire des bugs comme cela
+        */
         // on supprime l'item voulu dans la nouvelle liste
         delete newList[id]
 
@@ -116,6 +133,10 @@ export function useToDoList() {
         // on attribut la nouvelle valeur du text à la nouvelle liste
         newList[id].text = text
 
+
+        /*
+            La séquence : "set('lisTodo', x); updateList(x)" se répète beaucoup, envisage d'en faire une fonction
+        */
         // on ajoute les nouvelles valeurs dans le tableau stocké en local
         set('listTodo', JSON.stringify(newList))
 

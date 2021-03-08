@@ -39,9 +39,30 @@ const Home: React.FC = () => {
     // sinon on affiche la liste 
     else {
 
+      /*
+        Beaucoup de répétitions, c'est dommage !
+        Au final, ce qui change, c'est la liste des items affichés
+        La manière de les affiches reste la même
+        
+        Voici ce que j'aurais fait (en version simplifiée) :
+
+        function App() {
+          const [list, setList] = useState([])
+
+          const allItems = list
+          const pendingItems = list.filter(item => item.checked === false)
+          const displayedList = setSegmentValue === 'all' ? allItems : pendingItems
+          
+          return (
+            displayedList.map(item => {
+              return // your implementation
+            })
+          )
+        }
+
+      */
       // pour afficher tous les items
       if (value === 'all') {
-
         return listItems.map((item) => {
 
           // ne pas afficher les items supprimés manuellement
@@ -61,6 +82,12 @@ const Home: React.FC = () => {
                 }}><IonIcon icon={create} color="primary" slot="end" /></IonButton>
 
 
+                {/* 
+                  Il me semble que ce n'est pas nécessaire de répéter IonActionSheet 
+                  et IonAlert autant de fois qu'il y a d'éléments dans la liste !
+
+                  Le mieux serait de les sortir en dehors de la boucle
+                */}
                 <IonActionSheet
                   isOpen={showActionSheet}
                   onDidDismiss={() => setShowActionSheet(false)}
